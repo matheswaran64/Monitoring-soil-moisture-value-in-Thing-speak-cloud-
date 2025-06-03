@@ -1,5 +1,4 @@
-# Monitoring-soil-moisture-value-in-Thing-speak-cloud
-# Uploading soil moisture sensor data in Thing Speak cloud
+# Monitoring soil moisture value in Thing speak cloud
 
 # AIM:
 To monitor the soil moisture value in the Thing speak cloud using soil moisture sensor and ESP32 controller.
@@ -84,10 +83,60 @@ Prototype and build IoT systems without setting up servers or developing web sof
 ![image](https://github.com/user-attachments/assets/5beaf86c-0d5d-4b99-9c22-bb0351f487ab)
 
 # PROGRAM:
+```
+#include <WiFi.h>
+#include <ThingSpeak.h>
+#define Soil_Moisture 34
+// Replace with your credentials
+const char ssid[] = "**";
+const char pass[] = "***";
+
+int keyIndex = 0;
+WiFiClient  client;
+
+unsigned long myChannelNumber = 2946131;
+const int ChannelField = 1; 
+const char * myWriteAPIKey = "TABQ9PISUZRVMMVB";
+
+const int airValue = 4095; 
+const int waterValue = 0;
+int percentage =0;
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(Soil_Moisture, INPUT);
+  WiFi.mode(WIFI_STA);   
+  ThingSpeak.begin(client);
+}
+
+void loop()
+{
+ if (WiFi.status() != WL_CONNECTED)
+  {
+    Serial.print("Attempting to connect to SSID: ");
+    Serial.println(ssid);
+    while (WiFi.status() != WL_CONNECTED)
+    {
+      WiFi.begin(ssid, pass);
+      Serial.print(".");
+      delay(5000);
+    }
+    Serial.println("\nConnected.");
+  }
+
+  int Soil_Value = analogRead(Soil_Moisture);
+  percentage = map(Soil_Value, airValue, waterValue, 0, 100);
+  percentage = constrain(percentage, 0, 100);
+  Serial.println("Soil moisture percentage");
+  Serial.println(percentage);
+  ThingSpeak.writeField(myChannelNumber, ChannelField, percentage, myWriteAPIKey);
+     delay(5000);
+}
+
+```
 # CIRCUIT DIAGRAM:
+![image](https://github.com/user-attachments/assets/d6e841a9-c846-4d54-9ade-3228d85f4572)
 # OUTPUT:
+![image](https://github.com/user-attachments/assets/fc3a3011-7491-4a80-9fe8-4a8041590a2e)
 # RESULT:
 Thus the soil moisture values are updated in the Thing speak cloud using ESP32 controller.
-
-
-
